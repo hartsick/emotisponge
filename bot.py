@@ -28,7 +28,7 @@ def check_dms():
     most_recent_dms = twitter.GetDirectMessages(last_dm_id)
 
     # update index, if needed
-    if most_recent_dms is not None:
+    if most_recent_dms:
         redis.set('dm:since_id:last', most_recent_dms[0].id)
 
     # for each dm, reply & increment counter
@@ -40,13 +40,16 @@ def check_dms():
     return num_dms
 
 def send_dm_response(id, text=None):
+    index = 0
     if text is None:
         possible_dms = [
             "ur the sweetest, thx (:",
             "(: aw shucks",
-            "yea yea yea"
+            "yea yea yea",
+
         ]
-        text = random.choice(possible_dms)
+        text = possible_dms[index]
+        index += 1
     twitter.PostDirectMessage(text, id)
 
 def check_faves():
