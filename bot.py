@@ -1,6 +1,7 @@
 import twitter
 import os
 import redis
+import random
 
 def twit_init():
     consumer_key = os.environ.get('EMOTISPONGE_CONSUMER_KEY')
@@ -26,32 +27,60 @@ def check_dms():
     last_dm_id = redis.get('dm:since_id:last')
     most_recent_dms = twitter.GetDirectMessages(last_dm_id)
 
+    # update index, if needed
+    if most_recent_dms is not None:
+        redis.set('dm:since_id:last', most_recent_dms[0].id)
+
     # for each dm, reply & increment counter
     num_dms = 0
     for dm in most_recent_dms:
-        send_dm_response(dm)
+        send_dm_response(dm.sender_id)
         num_dms += 1
-
-    # update index
-    redis.set('dm:since_id:last', most_recent_dms[0].id)
 
     return num_dms
 
-def send_dm_response(dm):
-    twitter.PostDirectMessage("ur the sweetest, thx (:", dm.sender_id)
+def send_dm_response(id, text=None):
+    if text is None:
+        possible_dms = [
+            "ur the sweetest, thx (:",
+            "(: aw shucks",
+            "yea yea yea"
+        ]
+        text = random.choice(possible_dms)
+    twitter.PostDirectMessage(text, id)
 
 def check_faves():
     pass
 
-# def check_follows():
+def check_follows():
+    # check for any follows received since last run
+    current_followers = set(twitter.GetFollowerIDs())
+    past_followers = redis.smembers('follower_ids')
+    new_followers = current_followers.difference(past_followers)
 
-# def check_mentions():
+    # follow back & send a message with instructions
+    if new_followers:
 
-# def check_replies():
+        for fid in new_followers:
+            twitter.CreateFriendship(fid)
 
-# def check_retweets():
+            message = "thx 4 the follow!! if u have any questions just reply 2me and say 'help', ok?/?"
+            send_dm_response(fid, message)
 
-# def check_timeout():
+            redis.sadd('follower_ids', fid)
+
+
+def follow_back(follow):
+    pass
+
+def check_mentions():
+    pass
+
+def check_replies():
+    pass
+
+def check_retweets():
+    pass
 
 # Rev the engines
 twitter = twit_init()
@@ -59,26 +88,12 @@ redis = redis_init()
 
 # Get going
 while True:
-    num_dms = check_dms()
-
-    # faves = check_faves()
-    # print faves
-
-    # follows = check_follows()
-    # print follows
-
-    # mentions = check_mentions()
-    # print mentions
-
-    # replies = check_replies()
-    # print replies
-
-    # retweets = check_retweets()
-    # print retweets
-
-    # timeout = check_timeout()
-    # print timeout
-
+    num_follows     = check_follows()
+    num_dms         = check_dms()
+    num_faves       = check_faves()
+    num_mentions    = check_mentions()
+    num_replies     = check_replies()
+    num_retweets    = check_retweets()
 
 # check for rate limit, set timer
 # respond to action with appropriate message
