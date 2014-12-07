@@ -20,7 +20,7 @@ def twit_init():
 def redis_init():
 
     # Redis Init
-    # redis_url = os.getenv('TWITTAGOTCHI_REDISTOGO_URL', 'redis://localhost:6379')
+    # redis_url = os.getenv('EMOTISPONGE_REDISTOGO_URL', 'redis://localhost:6379')
     # r = redis.from_url(redis_url)
 
     return r
