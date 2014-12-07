@@ -26,13 +26,13 @@ def check_dms():
     last_dm_id = redis.get('dm:since_id:last')
     most_recent_dms = twitter.GetDirectMessages(last_dm_id)
 
-    # for each, reply & increment counter
+    # for each dm, reply & increment counter
     num_dms = 0
     for dm in most_recent_dms:
         send_dm_response(dm)
         num_dms += 1
 
-    # update dm index
+    # update index
     redis.set('dm:since_id:last', most_recent_dms[0].id)
 
     return num_dms
@@ -60,7 +60,6 @@ redis = redis_init()
 # Get going
 while True:
     num_dms = check_dms()
-    break
 
     # faves = check_faves()
     # print faves
