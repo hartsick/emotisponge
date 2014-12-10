@@ -1,8 +1,8 @@
 from twython import Twython
-from common import twitter_auth, redis, KEYS
+from common import twitter_auth_credentials, redis, REDIS_KEYS
 import json
 
-twitter = Twython(*twitter_auth)
+twitter = Twython(*twitter_auth_credentials)
 
 def follow_oldest():
     twitter_id = redis.rpop('queued_follows')
@@ -13,11 +13,17 @@ def follow_oldest():
 
 def direct_message_oldest():
     # load dm tuple from json stored in redis
-    dm = tuple(json.loads(redis.rpop('queued_dms')))
+    dm_string = redis.rpop('queued_dms')
+    dm = None
+
+    if dm_string:
+        dm = tuple(json.loads(dm_string))
 
     if dm:
+        # grab DM info from stored tuple
         twitter_id = dm[0]
         dm_text = dm[1]
+
         twitter.send_direct_message(user_id=twitter_id, text=dm_text)
         print dm + " sent."
 

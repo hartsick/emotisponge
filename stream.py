@@ -1,6 +1,6 @@
 import logging
 from twython import TwythonStreamer
-from common import redis, twitter_auth, KEYS
+from common import redis, twitter_auth_credentials, REDIS_KEYS
 import rest
 import random
 import json
@@ -61,7 +61,7 @@ def _process_tweet(tweet):
     # tweet is retweet
 
   # mention
-  if tweet['entities']['user_mentions']
+  if tweet['entities']['user_mentions']:
     redis.incr('mentions')
 
   # TODO:
@@ -134,9 +134,9 @@ def queue_tweet(message_text, screenname=None):
 
 
 def get_emo_score():
-  values = redis.mget(*KEYS)
+  values = redis.mget(*REDIS_KEYS)
   print values
   # TODO: tally & return tally
 
-stream = TweetStreamer(*twitter_auth)
+stream = TweetStreamer(*twitter_auth_credentials)
 stream.user(**{'with': 'user'})
