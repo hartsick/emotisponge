@@ -3,6 +3,7 @@ from twython import TwythonStreamer
 from common import redis, twitter_auth, KEYS
 import rest
 import random
+import json
 
 class TweetStreamer(TwythonStreamer):
 
@@ -44,19 +45,29 @@ def queue_dm(user_id, message_text=None, response_type=None):
     tweets = ["some", "random", "options"]
     message_text = random.choice(tweets)
 
-  print "send '{0}' to {1}".format(message_text, user_id)
-  redis.lpush('queued_dms', (user_id, message_text))
+  # prepare dm tuple for storage
+  dm_store = json.dumps((user_id, message_text))
+  redis.lpush('queued_dms', dm_store)
 
 
 def _process_tweet(tweet):
+  # reply
+  if tweet['in_reply_to_status_id'] is not None:
+    redis.incr('replies')
 
-  print 'Tweet received.'
-  print tweet
-  # determine type of tweet
-  # increment redis db
-  # queue tweet response
-    # if 'help', return directions
-    # if not, return greeting
+  # retweet
+  if tweet['retweeted_status'] is not None:
+    redis.incr('retweets')
+    # tweet is retweet
+
+  # mention
+  if tweet['entities']['user_mentions']
+    redis.incr('mentions')
+
+  # TODO:
+  # if 'help', return directions
+  # if not, return greeting
+  queue_tweet()
 
 
 def _process_event(event):

@@ -1,8 +1,7 @@
 import os
 import redis
 
-KEYS = ['follows', 'list_adds', 'list_removes', 'dms_received', 'dms_sent', 'mentions', 'replies',
-            'faves', 'unfaves' ]
+KEYS = ['follows', 'list_adds', 'list_removes', 'dms_received', 'dms_sent', 'mentions', 'replies', 'faves', 'unfaves', 'retweets' ]
 
 def twitter_auth_init():
   consumer_key = os.environ.get('EMOTISPONGE_CONSUMER_KEY')
