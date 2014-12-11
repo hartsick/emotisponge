@@ -1,5 +1,6 @@
 import os
 import redis
+from wordnik import *
 
 REDIS_KEYS = ['follows', 'list_adds', 'list_removes', 'dms_received', 'dms_sent', 'mentions', 'replies', 'faves', 'unfaves', 'retweets' ]
 
@@ -16,11 +17,23 @@ def twitter_credentials_init():
 
   return credentials
 
+
 def redis_init():
   redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
   r = redis.from_url(redis_url)
 
   return r
 
+
+def wordnik_init():
+  apiUrl = 'http://api.wordnik.com/v4'
+  apiKey = os.environ.get('EMOTISPONGE_WORDNIK_KEY')
+  client = swagger.ApiClient(apiKey, apiUrl)
+
+  wordApi = WordApi(client)
+
+  return client
+
 redis = redis_init()
 twitter_auth_credentials = twitter_credentials_init()
+wordApi = wordnik_init()

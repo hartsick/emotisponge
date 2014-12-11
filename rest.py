@@ -28,8 +28,18 @@ def direct_message_oldest():
         print dm + " sent."
 
 def tweet_oldest():
-    # TODO: Process tweet queue
-    pass
+    # load tweet tuple from json stored in redis
+    tweet_string = redis.rpop('queued_tweets')
+    tweet = None
+
+    if tweet_string:
+        tweet = tuple(json.loads(tweet_string))
+
+    if tweet:
+        tweet_text = tweet[0]
+        reply_id = tweet[1]
+        twitter.update_status(status=tweet_text, in_reply_to_id=reply_id)
 
 follow_oldest()
 direct_message_oldest()
+# tweet_oldest()
