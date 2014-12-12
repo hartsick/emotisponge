@@ -1,6 +1,6 @@
-from twython import Twython
-from common import twitter_auth_credentials, redis, REDIS_KEYS
 import json
+from twython import Twython
+from common import twitter_auth_credentials, redis
 
 twitter = Twython(*twitter_auth_credentials)
 

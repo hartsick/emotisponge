@@ -1,2 +1,4 @@
+bot/*.pyc
 *.pyc
+bot/*.rdb
 *.rdb

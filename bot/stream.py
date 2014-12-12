@@ -1,10 +1,8 @@
-import logging
+import json
+import random
 from twython import TwythonStreamer
 from common import redis, twitter_auth_credentials
-import rest
-import random
-import json
-from status import *
+from status import generate_emo_status
 
 class TweetStreamer(TwythonStreamer):
 
