@@ -1,10 +1,10 @@
 import json
+import time
 from datetime import datetime
 import dateutil.parser as parser
-from common import redis, AGE_WEIGHT
-from rest import twitter
+from common import AGE_WEIGHT
 
-def set_birth_time():
+def set_birth_time(twitter, redis):
     current_time = datetime.now()
 
     # Redis stores strings, so convert accordingly
@@ -13,20 +13,24 @@ def set_birth_time():
 
     human_readable_time = datetime.strftime(current_time,'%a, %B %d, %Y at %X %Z')
 
-    print "An emotisponge was born at " + human_readable_time + "!"
-    # twitter.update_status(status="An emotisponge was born at " + human_readable_time + "!")
+    twitter.update_status("An emotisponge was born at " + human_readable_time + "!")
+    time.sleep(60)
+    twitter.update_status("hellooooo, world! (: :)")
 
-def get_birth_time():
+
+def get_birth_time(redis):
     string = redis.get('birth_date')
     date = parser.parse(string)
 
     return date
 
-def age():
-    age = datetime.now() - get_birth_time()
+
+def age(redis):
+    age = datetime.now() - get_birth_time(redis)
     return age
 
-def age_with_score():
-    age_in_days = age().days
+
+def age_with_score(redis):
+    age_in_days = age(redis).days
     age_with_score = (age_in_days, AGE_WEIGHT)
     return age_with_score

@@ -1,7 +1,8 @@
 import random
-from common import wordApi, redis, EVENT_NAMES, EVENT_VALUES
+from common import EVENT_NAMES, EVENT_VALUES
 from age import age_with_score
 
+# TODO: Perodically check score and kill bot
 def generate_random_greeting():
   # TODO: fill with messages
   messages = [
@@ -10,8 +11,8 @@ def generate_random_greeting():
   return random.choice(messages)
 
 
-def generate_emo_status():
-  score = get_emo_score()
+def generate_emo_status(redis, wordApi):
+  score = get_emo_score(redis)
 
   if score >= 75:
     seed_word = "elated"
@@ -39,7 +40,7 @@ def generate_emo_status():
     return "D; I am so "+mood+"..."
 
 
-def get_synonym(word):
+def get_synonym(wordApi, word):
   wordnik_synonyms = wordApi.getRelatedWords(word, relationshipTypes='synonym')
 
   synonyms = wordnik_synonyms[0].words
@@ -47,7 +48,7 @@ def get_synonym(word):
   return random.choice(synonyms)
 
 
-def get_emo_score():
+def get_emo_score(redis):
   event_counts = redis.mget(*EVENT_NAMES)
 
   score = 0
@@ -58,19 +59,14 @@ def get_emo_score():
     score += (value * int(event_counts[index]))
     index += 1
 
-  print score
-
   # adjust by length of time bot has been around
-  score = score - calculate_age_score()
-
-  print score
+  score = score - calculate_age_score(redis)
 
   return score
 
-def calculate_age_score():
-  scored_age = age_with_score()
+
+def calculate_age_score(redis):
+  scored_age = age_with_score(redis)
   score = scored_age[0] * scored_age[1]
 
   return score
-
-print generate_emo_status()

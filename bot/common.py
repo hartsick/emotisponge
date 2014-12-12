@@ -5,11 +5,11 @@ from wordnik.WordApi import WordApi
 
 # Weights for determining Score
 EVENT_VALUES = {
-'follows': 15, 'list_adds': 20, 'list_removes': -15, 'dms_received': 10, 'dms_sent': 0,
-'mentions': 15, 'replies': 10, 'faves': 5, 'unfaves': -5, 'retweets': 15
+'follows': 4, 'list_adds': 5, 'list_removes': -5, 'dms_received': 1, 'dms_sent': 0,
+'mentions': 3, 'replies':2, 'faves': 1, 'unfaves': -1, 'retweets': 2
 }
 EVENT_NAMES = EVENT_VALUES.keys()
-AGE_WEIGHT = 50
+AGE_WEIGHT = 15
 
 def twitter_credentials_init():
   consumer_key = os.environ.get('EMOTISPONGE_CONSUMER_KEY')
@@ -44,7 +44,3 @@ def wordnik_init():
   wordApi = WordApi(client)
 
   return wordApi
-
-redis = redis_init()
-twitter_auth_credentials = twitter_credentials_init()
-wordApi = wordnik_init()
