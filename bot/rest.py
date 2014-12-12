@@ -14,7 +14,7 @@ def follow_oldest(twitter, redis):
 
     if twitter_id:
         twitter.create_friendship(user_id=twitter_id)
-        print twitter_id + " followed."
+        print "FOLLOW SENT: {0}".format(twitter_id)
 
 
 def direct_message_oldest(twitter, redis):
@@ -31,22 +31,15 @@ def direct_message_oldest(twitter, redis):
         dm_text = dm[1]
 
         twitter.send_direct_message(user_id=twitter_id, text=dm_text)
-        print dm + " sent."
+        print "DM SENT: " +dm[1]
 
 
 def tweet_oldest(twitter, redis):
-    # load tweet tuple from json stored in redis
-    tweet_string = redis.rpop('queued_tweets')
-    tweet = None
+    tweet_text = redis.rpop('queued_tweets')
 
-    if tweet_string:
-        tweet = tuple(json.loads(tweet_string))
-
-    if tweet:
-        tweet_text = tweet[0]
-        reply_id = tweet[1]
-        twitter.update_status(status=tweet_text, in_reply_to_id=reply_id)
-        print "Tweet: "+tweet_text+" was sent."
+    if tweet_text:
+        twitter.update_status(status=tweet_text)
+        print "TWEET SENT: "+tweet_text
 
 
 def retweet_oldest(twitter, redis):
@@ -54,7 +47,7 @@ def retweet_oldest(twitter, redis):
 
     if tweet_id:
         twitter.retweet(id=tweet_id)
-        print tweet_id + " retweeted."
+        print "RT SENT: {0}".format(tweet_id)
 
 
 def fave_oldest(twitter, redis):
@@ -62,4 +55,4 @@ def fave_oldest(twitter, redis):
 
     if tweet_id:
         twitter.create_favorite(id=tweet_id)
-        print tweet_id + " faved."
+        print "FAVE SENT: {0}".format(tweet_id)
