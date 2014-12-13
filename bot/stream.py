@@ -77,48 +77,52 @@ class TweetStreamer(TwythonStreamer):
   def _process_event(self, event):
     print '{0} event received'.format(event['event'])
 
-    # Follow
-    if event['event'] == 'follow':
-      self.redis.incr('follows')
-      user_id = event['source']['id']
+    # Ignore bot-triggered events
+    if event['source']['name'] is not BOT_NAME:
 
-      self.queue_follow(user_id)
-      self.queue_dm(user_id, response_type='help')
+      # Follow
+      if event['event'] == 'follow':
 
-    # Fave
-    elif event['event'] == 'favorite' or event['event'] == 'retweet_favorite':
-      self.redis.incr('faves')
+        self.redis.incr('follows')
+        user_id = event['source']['id']
 
-      username = event['source']['screen_name']
-      responses = ["ooooh, @"+username+" is lovin me", "fave fave fave fave fave :D", "ur my fave too, @"+username+"! (:"]
+        self.queue_follow(user_id)
+        self.queue_dm(user_id, response_type='help')
 
-      self.queue_tweet(message_text=random.choice(responses))
+      # Fave
+      elif event['event'] == 'favorite' or event['event'] == 'retweet_favorite' :
+        self.redis.incr('faves')
 
-    # Unfave
-    elif event['event'] == 'unfavorite':
-      self.redis.incr('unfaves')
-      text = "i'm no longer a fave ;("
+        username = event['source']['screen_name']
+        responses = ["ooooh, @"+username+" is lovin me", "fave fave fave fave fave :D", "ur my fave too, @"+username+"! (:"]
 
-      self.queue_tweet(message_text = text)
+        self.queue_tweet(message_text=random.choice(responses))
 
-    # List add
-    elif event['event'] == 'list_member_added':
-      self.redis.incr('list_adds')
+      # Unfave
+      elif event['event'] == 'unfavorite':
+        self.redis.incr('unfaves')
+        text = "i'm no longer a fave ;("
 
-      list_name = event['target_object']['name']
-      user_name = event['target_object']['user']['screen_name']
-      text = ":D I got added to "+list_name+"! thanks @"+username+" !!"
+        self.queue_tweet(message_text = text)
 
-      self.queue_tweet(message_text=text)
+      # List add
+      elif event['event'] == 'list_member_added':
+        self.redis.incr('list_adds')
 
-    # List remove
-    elif event['event'] == 'list_member_removed':
-      self.redis.incr('list_removes')
+        list_name = event['target_object']['name']
+        user_name = event['target_object']['user']['screen_name']
+        text = ":D I got added to "+list_name+"! thanks @"+username+" !!"
 
-      list_name = "unknown"
-      text = ":( somebody removed me from "+list_name+" :( :("
+        self.queue_tweet(message_text=text)
 
-      self.queue_tweet(message_text=text)
+      # List remove
+      elif event['event'] == 'list_member_removed':
+        self.redis.incr('list_removes')
+
+        list_name = "unknown"
+        text = ":( somebody removed me from "+list_name+" :( :("
+
+        self.queue_tweet(message_text=text)
 
   def queue_dm(self, user_id, message_text=None, message_type=None):
 
