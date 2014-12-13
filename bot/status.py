@@ -2,6 +2,8 @@ import random
 from common import EVENT_NAMES, EVENT_VALUES
 from age import age_with_score
 
+HELP_TEXT = "i love new friends!! fave for fave? or maybe ask me how I'm doing? rly I just love attention! (:"
+
 def generate_random_greeting():
   messages = [
     "hi hi hi hi hi",

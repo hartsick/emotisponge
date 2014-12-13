@@ -2,7 +2,7 @@ import json
 import random
 from common import redis_init, wordnik_init, BOT_NAME
 from twython import TwythonStreamer
-from status import generate_emo_status, generate_random_greeting
+from status import generate_emo_status, generate_random_greeting, HELP_TEXT
 
 class TweetStreamer(TwythonStreamer):
 
@@ -127,7 +127,7 @@ class TweetStreamer(TwythonStreamer):
   def queue_dm(self, user_id, message_text=None, message_type=None):
 
     if message_type == 'help':
-      message_text = "hiii i love new friends!! fave for fave? or maybe ask me how I'm doing?"
+      message_text = HELP_TEXT
 
     elif message_type == 'status':
       message_text = generate_emo_status(self.redis, self.wordApi)
@@ -158,7 +158,7 @@ class TweetStreamer(TwythonStreamer):
 
   def queue_tweet(self, message_text=None, reply_to_screenname=None, message_type=None):
     if message_type == 'help':
-      message_text = "i love new friends!! fave for fave? or maybe ask me how I'm doing?"
+      message_text = HELP_TEXT
     elif message_type == 'status':
       message_text = generate_emo_status(self.redis, self.wordApi)
     else:
