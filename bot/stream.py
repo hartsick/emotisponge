@@ -59,7 +59,7 @@ class TweetStreamer(TwythonStreamer):
     if tweet.has_key('retweeted_status'):
       tweet_type = "retweet"
 
-      if tweet['source']['user']['screen_name'] is not BOT_NAME:
+      if tweet['source']['screen_name'] is not BOT_NAME:
         self.redis.incr('retweets')
         self.queue_fave(tweet['id'])
 
@@ -89,6 +89,7 @@ class TweetStreamer(TwythonStreamer):
 
     # Fave
     if event['event'] == 'favorite' or event['event'] == 'retweet_favorite':
+
       # Ignore bot-triggered events
       if event['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('faves')
@@ -100,13 +101,13 @@ class TweetStreamer(TwythonStreamer):
 
     # Unfave
     elif event['event'] == 'unfavorite':
+
       # Ignore bot-triggered events
       if event['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('unfaves')
         text = "i'm no longer a fave ;("
 
         self.queue_tweet(message_text = text)
-
 
     # Follow
     elif event['event'] == 'follow':
