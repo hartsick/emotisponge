@@ -40,41 +40,42 @@ class TweetStreamer(TwythonStreamer):
   def _process_tweet(self, tweet):
     # reply
     tweet_type = None
-    if tweet['in_reply_to_status_id'] is not None:
-      tweet_type = "reply"
-      self.redis.incr('replies')
+    if tweet['user']['screen_name'] is not BOT_NAME:
+      if tweet['in_reply_to_status_id'] is not None:
+        tweet_type = "reply"
+        self.redis.incr('replies')
 
-      username = tweet['user']['screen_name']
-      message_type = get_message_type(tweet['text'])
+        username = tweet['user']['screen_name']
+        message_type = get_message_type(tweet['text'])
 
-      if message_type:
-        self.queue_tweet(message_type=message_type, reply_to_screenname=username)
-      else:
+        if message_type:
+          self.queue_tweet(message_type=message_type, reply_to_screenname=username)
+        else:
+          self.queue_fave(tweet['id'])
+
+      # retweet
+      if tweet.has_key('retweeted_status'):
+        tweet_type = "retweet"
+        self.redis.incr('retweets')
         self.queue_fave(tweet['id'])
 
-    # retweet
-    if tweet.has_key('retweeted_status'):
-      tweet_type = "retweet"
-      self.redis.incr('retweets')
-      self.queue_fave(tweet['id'])
+      # mention
+      if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
+        tweet_type = "mention"
+        self.redis.incr('mentions')
 
-    # mention
-    if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
-      tweet_type = "mention"
-      self.redis.incr('mentions')
+        message_type = get_message_type(tweet['text'])
+        username = tweet['user']['screen_name']
 
-      message_type = get_message_type(tweet['text'])
-      username = tweet['user']['screen_name']
+        # if user is requesting help or an update, give it to them
+        if message_type:
+          self.queue_tweet(message_type=message_type, reply_to_screenname=username)
 
-      # if user is requesting help or an update, give it to them
-      if message_type:
-        self.queue_tweet(message_type=message_type, reply_to_screenname=username)
+        # if not, retweet it
+        else:
+          self.queue_retweet(tweet['id'])
 
-      # if not, retweet it
-      else:
-        self.queue_retweet(tweet['id'])
-
-    print tweet_type + " received."
+      print tweet_type + " received."
 
 
   def _process_event(self, event):
