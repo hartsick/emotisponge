@@ -38,11 +38,13 @@ class TweetStreamer(TwythonStreamer):
 
 
   def _process_tweet(self, tweet):
-    # reply
     tweet_type = None
-    if tweet['user']['screen_name'] is not BOT_NAME:
-      if tweet['in_reply_to_status_id'] is not None:
-        tweet_type = "reply"
+
+    # reply
+    if tweet['in_reply_to_status_id'] is not None:
+      tweet_type = "reply"
+
+      if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('replies')
 
         username = tweet['user']['screen_name']
@@ -53,15 +55,19 @@ class TweetStreamer(TwythonStreamer):
         else:
           self.queue_fave(tweet['id'])
 
-      # retweet
-      if tweet.has_key('retweeted_status'):
-        tweet_type = "retweet"
+    # retweet
+    if tweet.has_key('retweeted_status'):
+      tweet_type = "retweet"
+
+      if tweet['source']['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('retweets')
         self.queue_fave(tweet['id'])
 
-      # mention
-      if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
-        tweet_type = "mention"
+    # mention
+    if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
+      tweet_type = "mention"
+
+      if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('mentions')
 
         message_type = get_message_type(tweet['text'])
@@ -75,26 +81,16 @@ class TweetStreamer(TwythonStreamer):
         else:
           self.queue_retweet(tweet['id'])
 
-      print tweet_type + " received."
+        print tweet_type + " received."
 
 
   def _process_event(self, event):
     print '{0} event received'.format(event['event'])
 
-    # Ignore bot-triggered events
-    if event['source']['name'] is not BOT_NAME:
-
-      # Follow
-      if event['event'] == 'follow':
-
-        self.redis.incr('follows')
-        user_id = event['source']['id']
-
-        self.queue_follow(user_id)
-        self.queue_dm(user_id, response_type='help')
-
-      # Fave
-      elif event['event'] == 'favorite' or event['event'] == 'retweet_favorite' :
+    # Fave
+    if event['event'] == 'favorite' or event['event'] == 'retweet_favorite':
+      # Ignore bot-triggered events
+      if event['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('faves')
 
         username = event['source']['screen_name']
@@ -102,31 +98,47 @@ class TweetStreamer(TwythonStreamer):
 
         self.queue_tweet(message_text=random.choice(responses))
 
-      # Unfave
-      elif event['event'] == 'unfavorite':
+    # Unfave
+    elif event['event'] == 'unfavorite':
+      # Ignore bot-triggered events
+      if event['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('unfaves')
         text = "i'm no longer a fave ;("
 
         self.queue_tweet(message_text = text)
 
-      # List add
-      elif event['event'] == 'list_member_added':
-        self.redis.incr('list_adds')
 
-        list_name = event['target_object']['name']
-        user_name = event['target_object']['user']['screen_name']
-        text = ":D I got added to "+list_name+"! thanks @"+user_name+" !!"
+    # Follow
+    elif event['event'] == 'follow':
 
-        self.queue_tweet(message_text=text)
+      # Ignore bot-triggered events
+      if event['screen_name'] is not BOT_NAME:
 
-      # List remove
-      elif event['event'] == 'list_member_removed':
-        self.redis.incr('list_removes')
+        self.redis.incr('follows')
+        user_id = event['source']['id']
 
-        list_name = "unknown"
-        text = ":( somebody removed me from "+list_name+" :( :("
+        self.queue_follow(user_id)
+        self.queue_dm(user_id, message_type='help')
 
-        self.queue_tweet(message_text=text)
+    # List add
+    elif event['event'] == 'list_member_added':
+      self.redis.incr('list_adds')
+
+      list_name = event['target_object']['name']
+      user_name = event['target_object']['user']['screen_name']
+      text = ":D I got added to "+list_name+"! thanks @"+user_name+" !!"
+
+      self.queue_tweet(message_text=text)
+
+    # List remove
+    elif event['event'] == 'list_member_removed':
+      self.redis.incr('list_removes')
+
+      list_name = "unknown"
+      text = ":( somebody removed me from "+list_name+" :( :("
+
+      self.queue_tweet(message_text=text)
+
 
   def queue_dm(self, user_id, message_text=None, message_type=None):
 
