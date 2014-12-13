@@ -110,16 +110,15 @@ class TweetStreamer(TwythonStreamer):
 
     # Follow
     elif event['event'] == 'follow':
-      print event
 
       # Ignore bot-triggered events
-      # if event['screen_name'] is not BOT_NAME:
+      if event['source']['screen_name'] is not BOT_NAME:
 
-      #   self.redis.incr('follows')
-      #   user_id = event['source']['id']
+        self.redis.incr('follows')
+        user_id = event['source']['id']
 
-      #   self.queue_follow(user_id)
-      #   self.queue_dm(user_id, message_type='help')
+        self.queue_follow(user_id)
+        self.queue_dm(user_id, message_type='help')
 
     # List add
     elif event['event'] == 'list_member_added':
