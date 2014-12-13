@@ -27,27 +27,27 @@ def generate_emo_status(redis, wordApi):
   if score >= 75:
     seed_word = "elated"
     mood = get_synonym(wordApi, seed_word)
-    return "I'm feeling "+mood+"! :D :D :D :D :D   ({0})".format(score)
+    return "I'm feeling "+mood+"! :D :D :D :D :D   ({0} / 100)".format(score)
 
   elif score >= 50:
     seed_word = "happy"
     mood = get_synonym(wordApi, seed_word)
-    return "ohhh im p "+mood+", u know? (:   ({0})".format(score)
+    return "ohhh im p "+mood+", u know? (:   ({0} / 100)".format(score)
 
   elif score >= 25:
     seed_word="okay"
     mood = get_synonym(wordApi, seed_word)
-    return "i dunno, feelin' pretty "+mood+" rite now but maybe its just a bad day :|   ({0})".format(score)
+    return "i dunno, feelin' pretty "+mood+" rite now but maybe its just a bad day :|   ({0} / 100)".format(score)
 
   elif score > 10:
     seed_word="lonely"
     mood = get_synonym(wordApi, seed_word)
-    return "i could really really use a friend right now. feelin' rly "+mood+". :(   ({0})".format(score)
+    return "i could really really use a friend right now. feelin' rly "+mood+". :(   ({0} / 100)".format(score)
 
   elif score <= 10:
     seed_word="depressed"
     mood = get_synonym(wordApi, seed_word)
-    return "D; I am so "+mood+"...   ({0})".format(score)
+    return "D; I am so "+mood+"...   ({0} / 100)".format(score)
 
 
 def get_synonym(wordApi, word):
