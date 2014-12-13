@@ -19,6 +19,9 @@ class TweetStreamer(TwythonStreamer):
     elif data.get('event'):
       self._process_event(data)
 
+    print "data received:"
+    print data
+
 
   def on_error(self, status_code, data):
     print status_code
@@ -147,13 +150,13 @@ class TweetStreamer(TwythonStreamer):
   def queue_follow(self, user_id):
     self.redis.lpush('queued_follows', user_id)
 
-    print "FOLLOW QUEUED: "+ user_id
+    print "FOLLOW QUEUED: {0}".format(user_id)
 
 
   def queue_fave(self, tweet_id):
     self.redis.lpush('queued_faves', tweet_id)
 
-    print "FAVE QUEUED: "+ tweet_id
+    print "FAVE QUEUED: {0}".format(tweet_id)
 
 
   def queue_tweet(self, message_text=None, reply_to_screenname=None, message_type=None):
