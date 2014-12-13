@@ -13,11 +13,11 @@ def set_birth_time(twitter, redis):
 
     human_readable_time = datetime.strftime(current_time,'%a, %B %d, %Y at %X %Z')
 
-    twitter.update_status("An emotisponge was born at " + human_readable_time + "!")
+    twitter.update_status(status="An emotisponge was born at " + human_readable_time + "!")
     time.sleep(60)
-    twitter.update_status("hellooooo, world! (: :)")
+    twitter.update_status(status="hellooooo, world! (: :)")
     time.sleep(60)
-    twitter.update_status("luv me")
+    twitter.update_status(status="luv me")
 
 
 def get_birth_time(redis):
