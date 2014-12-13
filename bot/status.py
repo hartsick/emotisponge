@@ -2,7 +2,6 @@ import random
 from common import EVENT_NAMES, EVENT_VALUES
 from age import age_with_score
 
-# TODO: Perodically check score and kill bot
 def generate_random_greeting():
   messages = [
     "hi hi hi hi hi",

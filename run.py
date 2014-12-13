@@ -8,6 +8,8 @@ from bot.stream import TweetStreamer
 from bot.common import redis_init, twitter_credentials_init
 import bot.rest as rest
 
+# TODO: Periodically tweet random things, not above rate limit
+# TODO: Perodically check score and kill bot
 
 def run_stream():
     # Start Twitter stream, restart with delay on exception

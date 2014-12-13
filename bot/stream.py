@@ -128,10 +128,8 @@ class TweetStreamer(TwythonStreamer):
       message_text = generate_emo_status(self.redis, self.wordApi)
 
     if not message_text:
-      sentence_options =
-        ["thx for the message! i'm just a lil ol bot and don't know many words",
-        "<(^.^)>", "whats up pup", "pbbbbbbbbbt", "i like talking to u", "sorry, i don't talk much, but i like to listen", "tweet tweet",
-        "In another life, I was aboard Apollo 11 and now I have been reduced to this."]
+      sentence_options = ["thx for the message! i'm just a lil ol bot and don't know many words", "<(^.^)>", "whats up pup", "pbbbbbbbbbt", "i like talking to u", "sorry, i don't talk much, but i like to listen", "tweet tweet", "In another life, I was aboard Apollo 11 and now I have been reduced to this."]
+
       message_text = random.choice(sentence_options)
 
     # prepare dm tuple for storage
