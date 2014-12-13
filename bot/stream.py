@@ -44,6 +44,7 @@ class TweetStreamer(TwythonStreamer):
     if tweet['in_reply_to_status_id'] is not None:
       tweet_type = "reply"
 
+      # Ignore own replies
       if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('replies')
 
@@ -59,7 +60,11 @@ class TweetStreamer(TwythonStreamer):
     if tweet.has_key('retweeted_status'):
       tweet_type = "retweet"
 
-      if tweet['source']['screen_name'] is not BOT_NAME:
+      # Ignore own retweets
+      RT_prefix_template = "RT @{0}".format(BOT_NAME)
+      tweet_prefix = tweet['text'].split(':')[0]
+
+      if tweet_prefix is not RT_prefix_template:
         self.redis.incr('retweets')
         self.queue_fave(tweet['id'])
 
@@ -67,6 +72,7 @@ class TweetStreamer(TwythonStreamer):
     if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
       tweet_type = "mention"
 
+      # Ignore own mentions
       if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('mentions')
 

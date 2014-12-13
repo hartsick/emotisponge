@@ -20,7 +20,7 @@ def run_stream():
         except Exception as e:
             logging.exception(e)
 
-        time.sleep(30)
+        time.sleep(60)
 
 
 def process_queue():
