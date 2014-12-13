@@ -128,7 +128,11 @@ class TweetStreamer(TwythonStreamer):
       message_text = generate_emo_status(self.redis, self.wordApi)
 
     if not message_text:
-      message_text = "thx for the message! i'm just a lil ol bot and don't know many words"
+      sentence_options =
+        ["thx for the message! i'm just a lil ol bot and don't know many words",
+        "<(^.^)>", "whats up pup", "pbbbbbbbbbt", "i like talking to u", "sorry, i don't talk much, but i like to listen", "tweet tweet",
+        "In another life, I was aboard Apollo 11 and now I have been reduced to this."]
+      message_text = random.choice(sentence_options)
 
     # prepare dm tuple for storage
     dm_store = json.dumps((user_id, message_text))
@@ -177,12 +181,9 @@ def get_message_type(message_text):
   status_phrases = ['how are u','how are you',"what's up",'whats up','wut up','wat ^','status','how u doin']
 
   if help in message_text:
-    print "HELP"
     return 'help'
   else:
     for phrase in status_phrases:
       if phrase in message_text:
-        print "STATUS"
         return 'status'
-    print "NONE"
     return None
