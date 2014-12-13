@@ -43,10 +43,11 @@ def tweet_oldest(twitter, redis):
 
 
 def retweet_oldest(twitter, redis):
-    tweet_id = redis.rpop('queued_retweets')
+    tweet_id_string = redis.rpop('queued_retweets')
 
-    if tweet_id:
-        twitter.retweet(id=int(tweet_id))
+    if tweet_id_string:
+        tweet_id = int(tweet_id_string)
+        twitter.retweet(id=tweet_id)
         print "RT SENT: {0}".format(tweet_id)
 
 

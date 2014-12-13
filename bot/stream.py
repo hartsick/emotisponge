@@ -111,7 +111,7 @@ class TweetStreamer(TwythonStreamer):
 
         list_name = event['target_object']['name']
         user_name = event['target_object']['user']['screen_name']
-        text = ":D I got added to "+list_name+"! thanks @"+username+" !!"
+        text = ":D I got added to "+list_name+"! thanks @"+user_name+" !!"
 
         self.queue_tweet(message_text=text)
 
@@ -166,6 +166,9 @@ class TweetStreamer(TwythonStreamer):
         message_text = generate_random_greeting()
     if reply_to_screenname:
       message_text = '@{0} {1}'.format(reply_to_screenname, message_text)
+    # respond publicly if someone asks how you're doing
+    if reply_to_screenname and message_type == 'status':
+      message_text = '.{0}'.format(message_text)
 
     self.redis.lpush('queued_tweets', message_text)
 
