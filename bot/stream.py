@@ -95,7 +95,7 @@ class TweetStreamer(TwythonStreamer):
 
     # Fave
     if event['event'] == 'favorite' or event['event'] == 'retweet_favorite':
-
+      print event
       # Ignore bot-triggered events
       if event['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('faves')
