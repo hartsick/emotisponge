@@ -4,9 +4,9 @@ import os
 import logging
 from multiprocessing import Process
 from twython import Twython
-from stream import TweetStreamer
-from common import redis_init, twitter_credentials_init
-import rest
+from bot.stream import TweetStreamer
+from bot.common import redis_init, twitter_credentials_init
+import bot.rest as rest
 
 
 def run_stream():
@@ -25,6 +25,7 @@ def process_queue():
     redis = redis_init()
     twitter = Twython(*twitter_credentials_init())
 
+    # TODO: Properly rate limit calls
     while True:
         print "Processing queue..."
         print datetime.utcnow()

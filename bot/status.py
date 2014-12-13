@@ -4,9 +4,18 @@ from age import age_with_score
 
 # TODO: Perodically check score and kill bot
 def generate_random_greeting():
-  # TODO: fill with messages
   messages = [
-    "hi hi hi hi hi"
+    "hi hi hi hi hi",
+    "hi how is it going?",
+    "i saw the cutest doggy today",
+    "agjlabbbbbb llpbbbbbb llpbb <3",
+    "^.^",
+    "little dogs have the cutest ears",
+    "my butt is weird",
+    "tableflip emoticon",
+    "lets all listen to moondog ok?",
+    "i like midnight dances",
+    "lemons lemons lemons lemons"
   ]
   return random.choice(messages)
 

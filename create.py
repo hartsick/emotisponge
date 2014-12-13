@@ -1,7 +1,7 @@
 import os
 from twython import Twython
-from common import redis_init, twitter_credentials_init
-from age import set_birth_time
+from bot.common import redis_init, twitter_credentials_init
+from bot.age import set_birth_time
 
 if __name__ == '__main__':
 
