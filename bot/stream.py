@@ -109,7 +109,7 @@ class TweetStreamer(TwythonStreamer):
     elif event['event'] == 'unfavorite':
 
       # Ignore bot-triggered events
-      if event['user']['screen_name'] is not BOT_NAME:
+      if event['source']['screen_name'] is not BOT_NAME:
         self.redis.incr('unfaves')
         text = "i'm no longer a fave ;("
 
