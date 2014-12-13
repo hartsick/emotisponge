@@ -1,6 +1,6 @@
 import json
 import random
-from common import redis_init, wordnik_init
+from common import redis_init, wordnik_init, BOT_NAME
 from twython import TwythonStreamer
 from status import generate_emo_status, generate_random_greeting
 
@@ -25,12 +25,13 @@ class TweetStreamer(TwythonStreamer):
 
 
   def _process_dm(self, dm):
+    # Don't count direct messages from yourself
+    if dm['sender']['name'] is not BOT_NAME:
+      print 'Direct message received.'
+      self.redis.incr('dms_received')
 
-    print 'Direct message received.'
-    self.redis.incr('dms_received')
-
-    message_type = get_message_type(dm['text'])
-    self.queue_dm(dm['sender']['id'], message_type=message_type)
+      message_type = get_message_type(dm['text'])
+      self.queue_dm(dm['sender']['id'], message_type=message_type)
 
 
   def _process_tweet(self, tweet):
