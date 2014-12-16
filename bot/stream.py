@@ -102,10 +102,10 @@ class TweetStreamer(TwythonStreamer):
     # Fave
     if event['event'] == 'favorite':
       # Ignore bot-triggered events
-      if event['source']['screen_name'] is not BOT_NAME:
+      username = event['source']['screen_name']
+      if username is not BOT_NAME:
         self.redis.incr('faves')
 
-        username = event['source']['screen_name']
         responses = ["ooooh, @"+username+" is lovin me", "fave fave fave fave fave :D", "ur my fave too, @"+username+"! (:"]
 
         self.queue_tweet(message_text=random.choice(responses))
@@ -124,10 +124,10 @@ class TweetStreamer(TwythonStreamer):
     elif event['event'] == 'follow':
 
       # Ignore bot-triggered events
-      if event['source']['screen_name'] is not BOT_NAME:
+      user_id = event['source']['screen_name']
+      if user_id is not BOT_ID:
 
         self.redis.incr('follows')
-        user_id = event['source']['id']
 
         self.queue_follow(user_id)
         self.queue_dm(user_id, message_type='help')

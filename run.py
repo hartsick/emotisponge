@@ -40,7 +40,7 @@ def process_queue():
         except Exception as e:
             logging.exception(e)
 
-        time.sleep(30)
+        time.sleep(60)
 
 
 if __name__ == "__main__":
