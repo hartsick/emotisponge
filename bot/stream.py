@@ -191,7 +191,7 @@ class TweetStreamer(TwythonStreamer):
   def queue_tweet(self, message_text=None, reply_to_screenname=None, message_type=None):
     # annoying hack to prevent self-reply loop
     # TODO: fix
-    if reply_to_screenname == BOTNAME:
+    if reply_to_screenname == BOT_NAME:
       pass
     else:
       if message_type == 'help':
