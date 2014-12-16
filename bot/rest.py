@@ -8,6 +8,8 @@ def tweet_random(twitter):
     tweet_text = random.choice(tweets)
     twitter.update_status(status=tweet_text)
 
+    return true
+
 
 def follow_oldest(twitter, redis):
     twitter_id = redis.rpop('queued_follows')
@@ -15,6 +17,8 @@ def follow_oldest(twitter, redis):
     if twitter_id:
         twitter.create_friendship(user_id=twitter_id)
         print "FOLLOW SENT: {0}".format(twitter_id)
+
+        return true
 
 
 def direct_message_oldest(twitter, redis):
@@ -33,6 +37,8 @@ def direct_message_oldest(twitter, redis):
         twitter.send_direct_message(user_id=twitter_id, text=dm_text)
         print "DM SENT: " +dm[1]
 
+        return true
+
 
 def tweet_oldest(twitter, redis):
     tweet_text = redis.rpop('queued_tweets')
@@ -40,6 +46,8 @@ def tweet_oldest(twitter, redis):
     if tweet_text:
         twitter.update_status(status=tweet_text)
         print "TWEET SENT: "+tweet_text
+
+        return true
 
 
 def retweet_oldest(twitter, redis):
@@ -50,6 +58,8 @@ def retweet_oldest(twitter, redis):
         twitter.retweet(id=tweet_id)
         print "RT SENT: {0}".format(tweet_id)
 
+        return true
+
 
 def fave_oldest(twitter, redis):
     tweet_id = redis.rpop('queued_fave')
@@ -57,3 +67,21 @@ def fave_oldest(twitter, redis):
     if tweet_id:
         twitter.create_favorite(id=tweet_id)
         print "FAVE SENT: {0}".format(tweet_id)
+
+        return true
+
+
+def get_rate_limit(twitter):
+    num_remaining = twitter.get_lastfunction_header('x-rate-limit-remaining')
+
+    time_remaining = None
+    if num_remaining <= 0:
+        reset = twitter.get_lastfunction_header('x-rate-limit-reset')
+
+        current_time = int(time())
+        time_remaining = reset_time - current_time
+
+    rate_limit = { 'remaining': num_remaining, 'time_until_reset': time_remaining }
+
+    print "{0} posts remaining. Reset in {1}".format(num_remaining, time_remaining)
+    return rate_limit
