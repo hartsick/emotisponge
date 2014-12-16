@@ -8,7 +8,7 @@ def generate_random_greeting():
   messages = [
     "hi hi hi hi hi",
     "hi how is it going?",
-    "i saw the cutest doggy today",
+    "i saw the cutest dog today",
     "agjlabbbbbb llpbbbbbb llpbb <3",
     "^.^",
     "little dogs have the cutest ears",
@@ -16,7 +16,13 @@ def generate_random_greeting():
     "tableflip emoticon",
     "lets all listen to moondog ok?",
     "i like midnight dances",
-    "lemons lemons lemons lemons"
+    "lemons lemons lemons lemons",
+    "<( u. u <)",
+    "my hopes and dreams are all fading so quickly",
+    "do bots die?",
+    "hey.",
+    "howdy",
+    "sorry i don't have much to say, but thx for checkin in!!"
   ]
   return random.choice(messages)
 

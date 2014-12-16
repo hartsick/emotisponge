@@ -83,9 +83,15 @@ class TweetStreamer(TwythonStreamer):
         if message_type:
           self.queue_tweet(message_type=message_type, reply_to_screenname=username)
 
-        # if not, retweet it
+        # otherwise...
         else:
-          self.queue_retweet(tweet['id'])
+          # if mention, RT
+          if "@{0}".format(BOT_NAME) in tweet['text'].split(' ')[0]:
+            self.queue_retweet(tweet['id'])
+
+          # otherwise, just respond
+          self.queue_tweet(reply_to_screenname=username)
+
 
         print tweet_type + " received."
 
@@ -208,10 +214,12 @@ def get_message_type(message_text):
   help = 'help'
   status_phrases = ['how are u','how are you',"what's up",'whats up','wut up','wat ^','status','how u doin']
 
-  if help in message_text:
+  lower_text = message_text.lower()
+
+  if help in lower_text:
     return 'help'
   else:
     for phrase in status_phrases:
-      if phrase in message_text:
+      if phrase in lower_text:
         return 'status'
     return None
