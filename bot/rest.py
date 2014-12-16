@@ -13,7 +13,6 @@ def tweet_random(twitter):
 
 def follow_oldest(twitter, redis):
     twitter_id = redis.rpop('queued_follows')
-    print "follow_oldest: {0}".format(twitter_id)
 
     if twitter_id:
         twitter.create_friendship(user_id=twitter_id)
@@ -27,7 +26,6 @@ def direct_message_oldest(twitter, redis):
     dm_string = redis.rpop('queued_dms')
     dm = None
 
-    print "dm_oldest: {0}".format(dm_string)
 
     if dm_string:
         dm = tuple(json.loads(dm_string))
@@ -46,7 +44,6 @@ def direct_message_oldest(twitter, redis):
 def tweet_oldest(twitter, redis):
     tweet_text = redis.rpop('queued_tweets')
 
-    print "tweet_oldest: {0}".format(tweet_text)
 
     if tweet_text:
         twitter.update_status(status=tweet_text)
@@ -58,7 +55,6 @@ def tweet_oldest(twitter, redis):
 def retweet_oldest(twitter, redis):
     tweet_id_string = redis.rpop('queued_retweets')
 
-    print "retweet_oldest: {0}".format(tweet_id_string)
 
     if tweet_id_string:
         tweet_id = int(tweet_id_string)
@@ -70,7 +66,6 @@ def retweet_oldest(twitter, redis):
 
 def fave_oldest(twitter, redis):
     tweet_id_string = redis.rpop('queued_fave')
-    print "fave_oldest: {0}".format(tweet_id_string)
 
     if tweet_id_string:
         tweet_id = int(tweet_id_string)

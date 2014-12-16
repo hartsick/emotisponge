@@ -24,27 +24,25 @@ def run_stream():
 
 
 def process_queues(rest_function):
-    print rest_function
     redis = redis_init()
     twitter = Twython(*twitter_credentials_init())
 
     while True:
         try:
             sent = rest_function(twitter, redis)
-            print "sent is {0}".format(sent)
 
             if sent is True:
-                print "action taken. calculating rate_limit"
+                print "action taken. calculating rate limit"
                 rate_limit = rest.get_rate_limit(twitter)
 
                 # If rate limit exhausted, wait until refreshed
                 if rate_limit['time_until_reset']:
                     time.sleep(rate_limit['time_until_reset'])
 
+                time.sleep(5)
+
         except Exception as e:
             logging.exception(e)
-
-        time.sleep(5)
 
 
 if __name__ == "__main__":

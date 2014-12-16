@@ -183,6 +183,7 @@ class TweetStreamer(TwythonStreamer):
 
 
   def queue_fave(self, tweet_id):
+    print self.redis
     self.redis.lpush('queued_faves', tweet_id)
 
     print "FAVE QUEUED: {0}".format(tweet_id)
