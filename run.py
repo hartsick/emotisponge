@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 import os
 import logging
-from multiprocessing import Process, Pool
+from multiprocessing import Process
 from twython import Twython
 from bot.stream import TweetStreamer
 from bot.common import redis_init, twitter_credentials_init
@@ -23,9 +23,7 @@ def run_stream():
         time.sleep(60)
 
 
-def process_queues(rest_function):
-    redis = redis_init()
-    twitter = Twython(*twitter_credentials_init())
+def process_queues(rest_function, redis, twitter):
 
     while True:
         try:
@@ -47,6 +45,9 @@ def process_queues(rest_function):
 
 if __name__ == "__main__":
 
+    redis = redis_init()
+    twitter = Twython(*twitter_credentials_init())
+
     # TODO: add tweet_random
     rest_functions = [rest.follow_oldest, rest.direct_message_oldest, rest.tweet_oldest, rest.retweet_oldest, rest.fave_oldest]
 
@@ -54,7 +55,8 @@ if __name__ == "__main__":
 
     processes = [p1]
     for func in rest_functions:
-        p = Process(target=process_queues, args=(func,))
+        # pass in redis and twitter
+        p = Process(target=process_queues, args=(func, redis, twitter))
         processes.append(p)
 
     # Start all processes, then join
