@@ -34,8 +34,10 @@ def age(redis):
 
 
 def age_with_score(redis):
-    # age_in_days = age(redis).days
-    age_in_hours = age(redis).hour
+    diff_days    = age(redis).days
+    diff_seconds = age(redis).seconds
+
+    age_in_hours = (diff_days * 24) * (diff_seconds / 3600)
 
     age_with_score = (age_in_hours, AGE_WEIGHT)
 
