@@ -81,7 +81,7 @@ def get_rate_limit(twitter):
 
     time_remaining = None
     if num_remaining <= 0:
-        reset = twitter.get_lastfunction_header('x-rate-limit-reset')
+        reset_time = twitter.get_lastfunction_header('x-rate-limit-reset')
 
         current_time = int(time())
         time_remaining = reset_time - current_time
