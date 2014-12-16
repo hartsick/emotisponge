@@ -70,7 +70,7 @@ def retweet_oldest(twitter, redis):
 
 def fave_oldest(twitter, redis):
     tweet_id_string = redis.rpop('queued_fave')
-    print "fave_oldest: {0}".format(tweet_id)
+    print "fave_oldest: {0}".format(tweet_id_string)
 
     if tweet_id_string:
         tweet_id = int(tweet_id_string)
