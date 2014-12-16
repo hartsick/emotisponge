@@ -77,14 +77,17 @@ def fave_oldest(twitter, redis):
 
 def get_rate_limit(twitter):
 
-    num_remaining = twitter.get_lastfunction_header('x-rate-limit-remaining')
-
+    num_remaining = twitter.get_lastfunction_header('X-Rate-Limit-Remaining')
     time_remaining = None
+
     if num_remaining <= 0:
-        reset_time = twitter.get_lastfunction_header('x-rate-limit-reset')
+        reset_time = twitter.get_lastfunction_header('X-Rate-Limit-Reset')
+        print "reset_time: {0}".format(reset_time)
 
         current_time = int(time())
-        time_remaining = reset_time - current_time
+
+        if reset_time:
+            time_remaining = reset_time - current_time
 
     rate_limit = { 'remaining': num_remaining, 'time_until_reset': time_remaining }
 

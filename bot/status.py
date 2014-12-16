@@ -76,7 +76,11 @@ def get_emo_score(redis):
     index += 1
 
   # adjust by length of time bot has been around
-  score = score - calculate_age_score(redis)
+  age_penalty = calculate_age_score(redis)
+  print "Score w/o age: {0}".format(score)
+  print "Age penalty: {0}".format(age_penalty)
+
+  score = score - age_penalty
 
   return score
 
