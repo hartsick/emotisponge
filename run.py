@@ -28,13 +28,12 @@ def process_queues(rest_function):
     twitter = Twython(*twitter_credentials_init())
 
     while True:
-        print "Processing queue..."
-        print datetime.utcnow()
-
         try:
             sent = rest_function(twitter,redis)
+            print "sent is {0}".format(sent)
 
             if sent is True:
+                print "action taken. calculating rate_limit"
                 rate_limit = rest.get_rate_limit(twitter)
 
                 # If rate limit exhausted, wait until refreshed
