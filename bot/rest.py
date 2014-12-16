@@ -1,6 +1,6 @@
 import json
 import random
-import time
+from time import time
 
 # TODO: Implement tweet_random
 def tweet_random(twitter):
@@ -54,11 +54,10 @@ def tweet_oldest(twitter, redis):
 
 
 def retweet_oldest(twitter, redis):
-    tweet_id_string = redis.rpop('queued_retweets')
+    tweet_id = redis.rpop('queued_retweets')
 
 
-    if tweet_id_string:
-        tweet_id = int(tweet_id_string)
+    if tweet_id:
         twitter.retweet(id=tweet_id)
 
         print "RT SENT: {0}".format(tweet_id)
@@ -77,7 +76,6 @@ def fave_oldest(twitter, redis):
 
 
 def get_rate_limit(twitter):
-    print "GET RATE LIMIT"
 
     num_remaining = twitter.get_lastfunction_header('x-rate-limit-remaining')
 
