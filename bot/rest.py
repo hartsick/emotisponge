@@ -8,7 +8,7 @@ def tweet_random(twitter):
     tweet_text = random.choice(tweets)
     twitter.update_status(status=tweet_text)
 
-    return true
+    return True
 
 
 def follow_oldest(twitter, redis):
@@ -16,9 +16,9 @@ def follow_oldest(twitter, redis):
 
     if twitter_id:
         twitter.create_friendship(user_id=twitter_id)
-        print "FOLLOW SENT: {0}".format(twitter_id)
 
-        return true
+        print "FOLLOW SENT: {0}".format(twitter_id)
+        return True
 
 
 def direct_message_oldest(twitter, redis):
@@ -35,9 +35,9 @@ def direct_message_oldest(twitter, redis):
         dm_text = dm[1]
 
         twitter.send_direct_message(user_id=twitter_id, text=dm_text)
-        print "DM SENT: " +dm[1]
 
-        return true
+        print "DM SENT: " +dm[1]
+        return True
 
 
 def tweet_oldest(twitter, redis):
@@ -45,9 +45,9 @@ def tweet_oldest(twitter, redis):
 
     if tweet_text:
         twitter.update_status(status=tweet_text)
-        print "TWEET SENT: "+tweet_text
 
-        return true
+        print "TWEET SENT: "+tweet_text
+        return True
 
 
 def retweet_oldest(twitter, redis):
@@ -56,9 +56,9 @@ def retweet_oldest(twitter, redis):
     if tweet_id_string:
         tweet_id = int(tweet_id_string)
         twitter.retweet(id=tweet_id)
-        print "RT SENT: {0}".format(tweet_id)
 
-        return true
+        print "RT SENT: {0}".format(tweet_id)
+        return True
 
 
 def fave_oldest(twitter, redis):
@@ -66,9 +66,9 @@ def fave_oldest(twitter, redis):
 
     if tweet_id:
         twitter.create_favorite(id=tweet_id)
-        print "FAVE SENT: {0}".format(tweet_id)
 
-        return true
+        print "FAVE SENT: {0}".format(tweet_id)
+        return True
 
 
 def get_rate_limit(twitter):

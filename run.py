@@ -24,12 +24,13 @@ def run_stream():
 
 
 def process_queues(rest_function):
+    print rest_function
     redis = redis_init()
     twitter = Twython(*twitter_credentials_init())
 
     while True:
         try:
-            sent = rest_function(twitter,redis)
+            sent = rest_function(twitter, redis)
             print "sent is {0}".format(sent)
 
             if sent is True:
