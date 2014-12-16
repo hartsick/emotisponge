@@ -24,7 +24,7 @@ class TweetStreamer(TwythonStreamer):
 
 
   def on_error(self, status_code, data):
-    print status_code
+    print "Error: {0}".format(status_code)
 
 
   def _process_dm(self, dm):
@@ -183,8 +183,8 @@ class TweetStreamer(TwythonStreamer):
 
 
   def queue_fave(self, tweet_id):
-    print self.redis
     self.redis.lpush('queued_faves', tweet_id)
+    print self.redis.lindex('queued_faves', -1)
 
     print "FAVE QUEUED: {0}".format(tweet_id)
 
