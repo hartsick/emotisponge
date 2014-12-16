@@ -3,7 +3,10 @@ import redis
 from wordnik.swagger import ApiClient
 from wordnik.WordApi import WordApi
 
+# Bot info
 BOT_NAME = 'emotisponge'
+BOT_ID = 2921127146
+
 # Weights for determining Score
 EVENT_VALUES = {
 'follows': 4, 'list_adds': 5, 'list_removes': -5, 'dms_received': 1, 'dms_sent': 0,

@@ -1,6 +1,6 @@
 import json
 import random
-from common import redis_init, wordnik_init, BOT_NAME
+from common import redis_init, wordnik_init, BOT_NAME, BOT_ID
 from twython import TwythonStreamer
 from status import generate_emo_status, generate_random_greeting, HELP_TEXT
 
@@ -153,23 +153,27 @@ class TweetStreamer(TwythonStreamer):
 
 
   def queue_dm(self, user_id, message_text=None, message_type=None):
+    # annoying hack to prevent self-reply loop
+    # TODO: fix
+    if user_id == BOT_ID:
+      pass
+    else:
+      if message_type == 'help':
+        message_text = HELP_TEXT
 
-    if message_type == 'help':
-      message_text = HELP_TEXT
+      elif message_type == 'status':
+        message_text = generate_emo_status(self.redis, self.wordApi)
 
-    elif message_type == 'status':
-      message_text = generate_emo_status(self.redis, self.wordApi)
+      if not message_text:
+        sentence_options = ["thx for the message! i'm just a lil ol bot and don't know many words", "<(^.^)>", "whats up pup", "pbbbbbbbbbt", "i like talking to u", "sorry, i don't talk much, but i like to listen", "tweet tweet", "In another life, I was aboard Apollo 11 and now I have been reduced to this."]
 
-    if not message_text:
-      sentence_options = ["thx for the message! i'm just a lil ol bot and don't know many words", "<(^.^)>", "whats up pup", "pbbbbbbbbbt", "i like talking to u", "sorry, i don't talk much, but i like to listen", "tweet tweet", "In another life, I was aboard Apollo 11 and now I have been reduced to this."]
+        message_text = random.choice(sentence_options)
 
-      message_text = random.choice(sentence_options)
+      # prepare dm tuple for storage
+      dm_store = json.dumps((user_id, message_text))
+      self.redis.lpush('queued_dms', dm_store)
 
-    # prepare dm tuple for storage
-    dm_store = json.dumps((user_id, message_text))
-    self.redis.lpush('queued_dms', dm_store)
-
-    print "DM QUEUED: "+ message_text
+      print "DM QUEUED: "+ message_text
 
 
   def queue_follow(self, user_id):
@@ -185,22 +189,27 @@ class TweetStreamer(TwythonStreamer):
 
 
   def queue_tweet(self, message_text=None, reply_to_screenname=None, message_type=None):
-    if message_type == 'help':
-      message_text = HELP_TEXT
-    elif message_type == 'status':
-      message_text = generate_emo_status(self.redis, self.wordApi)
+    # annoying hack to prevent self-reply loop
+    # TODO: fix
+    if reply_to_screenname == BOTNAME:
+      pass
     else:
-      if not message_text:
-        message_text = generate_random_greeting()
-    if reply_to_screenname:
-      message_text = '@{0} {1}'.format(reply_to_screenname, message_text)
-    # respond publicly if someone asks how you're doing
-    if reply_to_screenname and message_type == 'status':
-      message_text = '.{0}'.format(message_text)
+      if message_type == 'help':
+        message_text = HELP_TEXT
+      elif message_type == 'status':
+        message_text = generate_emo_status(self.redis, self.wordApi)
+      else:
+        if not message_text:
+          message_text = generate_random_greeting()
+      if reply_to_screenname:
+        message_text = '@{0} {1}'.format(reply_to_screenname, message_text)
+      # respond publicly if someone asks how you're doing
+      if reply_to_screenname and message_type == 'status':
+        message_text = '.{0}'.format(message_text)
 
-    self.redis.lpush('queued_tweets', message_text)
+      self.redis.lpush('queued_tweets', message_text)
 
-    print "TWEET QUEUED: "+ message_text
+      print "TWEET QUEUED: "+ message_text
 
 
   def queue_retweet(self, tweet_id):
