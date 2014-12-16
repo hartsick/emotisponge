@@ -13,7 +13,7 @@ EVENT_VALUES = {
 'mentions': 3, 'replies':2, 'faves': 1, 'unfaves': -1, 'retweets': 2
 }
 EVENT_NAMES = EVENT_VALUES.keys()
-AGE_WEIGHT = 200
+AGE_WEIGHT = 20
 
 def twitter_credentials_init():
   consumer_key = os.environ.get('EMOTISPONGE_CONSUMER_KEY')

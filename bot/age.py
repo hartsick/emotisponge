@@ -29,10 +29,14 @@ def get_birth_time(redis):
 
 def age(redis):
     age = datetime.now() - get_birth_time(redis)
+
     return age
 
 
 def age_with_score(redis):
-    age_in_days = age(redis).days
-    age_with_score = (age_in_days, AGE_WEIGHT)
+    # age_in_days = age(redis).days
+    age_in_hours = age(redis).hours
+
+    age_with_score = (age_in_hours, AGE_WEIGHT)
+
     return age_with_score
