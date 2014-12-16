@@ -29,7 +29,7 @@ class TweetStreamer(TwythonStreamer):
 
   def _process_dm(self, dm):
     # Don't count direct messages from yourself
-    if dm['sender']['name'] is not BOT_NAME:
+    if dm['sender']['screen_name'] is not BOT_NAME:
       print 'Direct message received.'
       self.redis.incr('dms_received')
 
@@ -45,10 +45,10 @@ class TweetStreamer(TwythonStreamer):
       tweet_type = "reply"
 
       # Ignore own replies
-      if tweet['user']['name'] is not BOT_NAME:
+      if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('replies')
 
-        username = tweet['user']['name']
+        username = tweet['user']['screen_name']
         message_type = get_message_type(tweet['text'])
 
         if message_type:
@@ -73,11 +73,11 @@ class TweetStreamer(TwythonStreamer):
       tweet_type = "mention"
 
       # Ignore self-mentions
-      if tweet['user']['name'] is not BOT_NAME:
+      if tweet['user']['screen_name'] is not BOT_NAME:
         self.redis.incr('mentions')
 
         message_type = get_message_type(tweet['text'])
-        username = tweet['user']['name']
+        username = tweet['user']['screen_name']
 
         # if user is requesting help or an update, give it to them
         if message_type:
@@ -100,7 +100,7 @@ class TweetStreamer(TwythonStreamer):
     print '{0} event received'.format(event['event'])
 
     source_id =   event['source']['id']
-    source_name = event['source']['name']
+    source_name = event['source']['screen_name']
 
     # Fave
     if event['event'] == 'favorite':
@@ -139,7 +139,7 @@ class TweetStreamer(TwythonStreamer):
       self.redis.incr('list_adds')
 
       list_name = event['target_object']['name']
-      user_name = event['target_object']['user']['name']
+      user_name = event['target_object']['user']['screen_name']
       text = ":D I got added to "+list_name+"! thanks @"+user_name+" !!"
 
       self.queue_tweet(message_text=text)
