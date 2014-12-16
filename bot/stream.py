@@ -86,7 +86,7 @@ class TweetStreamer(TwythonStreamer):
         # otherwise...
         else:
           # if mention, RT
-          if "@{0}".format(BOT_NAME) in tweet['text'].split(' ')[0]:
+          if "@{0}".format(BOT_NAME) not in tweet['text'].split(' ')[0]:
             self.queue_retweet(tweet['id'])
 
           # otherwise, just respond
