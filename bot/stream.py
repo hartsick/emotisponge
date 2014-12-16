@@ -212,9 +212,10 @@ class TweetStreamer(TwythonStreamer):
 # Begin helper functions
 def get_message_type(message_text):
   help = 'help'
-  status_phrases = ['how are u','how are you',"what's up",'whats up','wut up','wat ^','status','how u doin']
+  status_phrases = ['how are u','how are you','whats up','wut up','wat ^','status','how u doin','hows it goin']
 
-  lower_text = message_text.lower()
+  # convert message text to lowercase without apostrophes
+  lower_text = message_text.lower().replace("'","")
 
   if help in lower_text:
     return 'help'
