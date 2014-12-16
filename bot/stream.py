@@ -45,10 +45,10 @@ class TweetStreamer(TwythonStreamer):
       tweet_type = "reply"
 
       # Ignore own replies
-      if tweet['user']['screen_name'] is not BOT_NAME:
+      if tweet['user']['name'] is not BOT_NAME:
         self.redis.incr('replies')
 
-        username = tweet['user']['screen_name']
+        username = tweet['user']['name']
         message_type = get_message_type(tweet['text'])
 
         if message_type:
@@ -72,12 +72,12 @@ class TweetStreamer(TwythonStreamer):
     if tweet['entities']['user_mentions'] and tweet_type not in ["reply", "retweet"]:
       tweet_type = "mention"
 
-      # Ignore own mentions
-      if tweet['user']['screen_name'] is not BOT_NAME:
+      # Ignore self-mentions
+      if tweet['user']['name'] is not BOT_NAME:
         self.redis.incr('mentions')
 
         message_type = get_message_type(tweet['text'])
-        username = tweet['user']['screen_name']
+        username = tweet['user']['name']
 
         # if user is requesting help or an update, give it to them
         if message_type:
@@ -99,14 +99,17 @@ class TweetStreamer(TwythonStreamer):
   def _process_event(self, event):
     print '{0} event received'.format(event['event'])
 
+    source_id =   event['source']['id']
+    source_name = event['source']['name']
+
     # Fave
     if event['event'] == 'favorite':
+
       # Ignore bot-triggered events
-      username = event['source']['screen_name']
-      if username is not BOT_NAME:
+      if source_name is not BOT_NAME:
         self.redis.incr('faves')
 
-        responses = ["ooooh, @"+username+" is lovin me", "fave fave fave fave fave :D", "ur my fave too, @"+username+"! (:"]
+        responses = ["ooooh, @"+source_name+" is lovin me", "fave fave fave fave fave :D", "ur my fave too, @"+source_name+"! (:"]
 
         self.queue_tweet(message_text=random.choice(responses))
 
@@ -114,7 +117,7 @@ class TweetStreamer(TwythonStreamer):
     elif event['event'] == 'unfavorite':
 
       # Ignore bot-triggered events
-      if event['source']['screen_name'] is not BOT_NAME:
+      if source_id is not BOT_ID:
         self.redis.incr('unfaves')
         text = "i'm no longer a fave ;("
 
@@ -124,20 +127,19 @@ class TweetStreamer(TwythonStreamer):
     elif event['event'] == 'follow':
 
       # Ignore bot-triggered events
-      user_id = event['source']['screen_name']
-      if user_id is not BOT_ID:
+      if source_id is not BOT_ID:
 
         self.redis.incr('follows')
 
-        self.queue_follow(user_id)
-        self.queue_dm(user_id, message_type='help')
+        self.queue_follow(source_id)
+        self.queue_dm(source_id, message_type='help')
 
     # List add
     elif event['event'] == 'list_member_added':
       self.redis.incr('list_adds')
 
       list_name = event['target_object']['name']
-      user_name = event['target_object']['user']['screen_name']
+      user_name = event['target_object']['user']['name']
       text = ":D I got added to "+list_name+"! thanks @"+user_name+" !!"
 
       self.queue_tweet(message_text=text)
