@@ -1,5 +1,6 @@
 import json
 import random
+import time
 
 # TODO: Implement tweet_random
 def tweet_random(twitter):

@@ -12,7 +12,7 @@ import bot.rest as rest
 # TODO: Perodically check score and kill bot
 
 def run_stream():
-    # Start Twitter stream, restart with delay on crash
+    # start Twitter stream, restart with delay on crash
     while True:
         try:
             stream = TweetStreamer(*twitter_credentials_init())
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     processes = [p1]
     for func in rest_functions:
-        # pass in redis and twitter
+        # use one redis & twitter connection
         p = Process(target=process_queues, args=(func, redis, twitter))
         processes.append(p)
 
