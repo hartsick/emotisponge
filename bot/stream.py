@@ -186,29 +186,32 @@ class TweetStreamer(TwythonStreamer):
 
   def queue_fave(self, tweet_id):
     self.redis.lpush('queued_faves', tweet_id)
-    print self.redis.lindex('queued_faves', -1)
 
     print "FAVE QUEUED: {0}".format(tweet_id)
 
 
   def queue_tweet(self, message_text=None, reply_to_screenname=None, message_type=None):
     # annoying hack to prevent self-reply loop
-    # TODO: fix
     if reply_to_screenname == BOT_NAME:
       pass
+
     else:
+      # respond to help
       if message_type == 'help':
         message_text = HELP_TEXT
+
+      # respond to status
       elif message_type == 'status':
         message_text = generate_emo_status(self.redis, self.wordApi)
+
       else:
+        # if no message text, generate it yourself
         if not message_text:
           message_text = generate_random_greeting()
+
+      # if reply, manually prepend the person to reply to
       if reply_to_screenname:
         message_text = '@{0} {1}'.format(reply_to_screenname, message_text)
-      # respond publicly if someone asks how you're doing
-      if reply_to_screenname and message_type == 'status':
-        message_text = '.{0}'.format(message_text)
 
       self.redis.lpush('queued_tweets', message_text)
 
@@ -222,6 +225,7 @@ class TweetStreamer(TwythonStreamer):
 
 
 # Begin helper functions
+
 def get_message_type(message_text):
   help = 'help'
   status_phrases = ['how are u','how are you','whats up','wut up','wat ^','status','how u doin','hows it goin']
