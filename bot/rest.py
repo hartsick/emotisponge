@@ -45,7 +45,6 @@ def direct_message_oldest(twitter, redis):
 def tweet_oldest(twitter, redis):
     tweet_text = redis.rpop('queued_tweets')
 
-
     if tweet_text:
         twitter.update_status(status=tweet_text)
 
@@ -54,10 +53,11 @@ def tweet_oldest(twitter, redis):
 
 
 def retweet_oldest(twitter, redis):
-    tweet_id = redis.rpop('queued_retweets')
+    tweet_id_string = redis.rpop('queued_retweets')
 
-
-    if tweet_id:
+    if tweet_id_string:
+        print "RT String: {0}".format(tweet_id_string)
+        tweet_id = int(tweet_id_string)
         twitter.retweet(id=tweet_id)
 
         print "RT SENT: {0}".format(tweet_id)
@@ -73,23 +73,3 @@ def fave_oldest(twitter, redis):
 
         print "FAVE SENT: {0}".format(tweet_id)
         return True
-
-
-def get_rate_limit(twitter):
-
-    num_remaining = twitter.get_lastfunction_header('X-Rate-Limit-Remaining')
-    time_remaining = None
-
-    if num_remaining <= 0:
-        reset_time = twitter.get_lastfunction_header('X-Rate-Limit-Reset')
-        print "reset_time: {0}".format(reset_time)
-
-        current_time = int(time())
-
-        if reset_time:
-            time_remaining = reset_time - current_time
-
-    rate_limit = { 'remaining': num_remaining, 'time_until_reset': time_remaining }
-
-    print "{0} posts remaining. Reset in {1}".format(num_remaining, time_remaining)
-    return rate_limit

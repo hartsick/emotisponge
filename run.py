@@ -29,15 +29,9 @@ def process_queues(rest_function, redis, twitter):
         try:
             sent = rest_function(twitter, redis)
 
+            # if action is taken, wait just a bit
             if sent is True:
-                print "action taken. calculating rate limit"
-                rate_limit = rest.get_rate_limit(twitter)
-
-                # If rate limit exhausted, wait until refreshed
-                if rate_limit['time_until_reset']:
-                    time.sleep(rate_limit['time_until_reset'])
-
-                time.sleep(5)
+                time.sleep(10)
 
         except Exception as e:
             logging.exception(e)
@@ -49,7 +43,7 @@ if __name__ == "__main__":
     twitter = Twython(*twitter_credentials_init())
 
     # TODO: add tweet_random
-    rest_functions = [rest.follow_oldest, rest.direct_message_oldest, rest.tweet_oldest, rest.retweet_oldest, rest.fave_oldest]
+    rest_functions = [rest.follow_oldest, rest.direct_message_oldest, rest.tweet_oldest, rest.fave_oldest]
 
     p1 = Process(target=run_stream)
 

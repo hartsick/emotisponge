@@ -87,7 +87,8 @@ class TweetStreamer(TwythonStreamer):
         else:
           # if mention, RT
           if "@{0}".format(BOT_NAME) not in tweet['text'].split(' ')[0]:
-            self.queue_retweet(tweet['id'])
+            # self.queue_retweet(tweet['id'])
+            pass
 
           # otherwise, just respond
           self.queue_tweet(reply_to_screenname=username)
